@@ -1,0 +1,586 @@
+---
+title: "Análisis de las experiencias y grados de tolerancia con la corrupción en el Perú (2019)"
+date: "`r Sys.Date()`"
+author: Claudia Villena Tagle
+output:
+  rmdformats::readthedown:
+    highlight: kate
+thumbnails: false
+lightbox: true
+pkgdown:
+code_folding: show
+self_contained: true
+---
+
+```{r setup, include=FALSE}
+## Global options
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+```{r echo=FALSE, message=FALSE}
+library(rmdformats)
+```
+
+AUTORA: Claudia Adriana Villena Tagle
+
+CORREO: claudia.villena@pucp.edu.pe
+
+## ¿Porqué estudiar la corrupción desde las percepciones y experiencias de los ciudadanos? 
+
+Uno de los principales problemas que enfrenta el Perú es la corrupción porque condiciona la capacidad del Estado para cumplir objetivos de política pública y servir al interés público. Además, este fenómeno genera pérdida de legitimidad de las instituciones públicas y sus autoridades.
+
+En el Perú, se han desarrollado diferentes iniciativas para hacer frente a esta problemática, principalmente desde un modelo racional de toma de decisiones. De esta forma, se estudian los diseños institucionales que carecen de regulación para imponer aún más sanciones y control (Montoya, 2015).  El problema de estas propuestas, como se identifica en estudios previos, es que no se considera la dimensión del comportamiento humano en el diseño de estas políticas anticorrupción (OCDE, 2018) 
+
+Ante esta situación, el presente informe busca analizar uno de los insumos más importantes para el desarrollo de políticas anticorrupción: las actitudes y experiencias de los peruanos con respecto a los comportamientos corruptos. En este análisis se considerará una aproximación a los valores personales de los encuestados sobre la corrupción: ¿son o no tolerantes con estos actos?
+
+Para ello, se realiza la siguiente pregunta de investigación:
+
+¿Cuál es el grado de tolerancia de los encuestados con los comportamientos corrupción? 
+
+Haciendo uso de la XI Encuesta Nacional sobre percepción de la corrupción en el Perú- 2019, se plantea que se podrá identificar un patrón de comportamientos que justifican y respaldan la corrupción mediante actitudes de tolerancia. Al respecto, se plantean dos hipótesis específicas:
+
+H1: El grado de tolencia a la corrupción varía entre las macrozonas del Perú
+
+H2: El grado de tolerancia a la corrupción varía entre grupos de edad de los encuestados
+
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+setwd("~/2021-1/PUCP/DIPLOMATURA/R STUDIO")
+```
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+library(rio)
+library(dplyr) # usar el pipe 
+library(tidyverse) # usar el pipe
+library(knitr) # dar formato a las tablas en html con la función kable
+library(rmarkdown)  # usar un diseño de html
+library(ggplot2)
+```
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+Base= import("Base de datos para Proética 2019_4.sav")
+```
+
+
+## ¿La corrupción es un problema público? Definición y gravedad del problema 
+
+En esta primera sección se desarrolla una aproximación al fenómeno de la corrupción a partir de las percepciones de los encuestados:
+
+### ¿Qué es la corrupción para los encuestados?
+
+A los encuestados se les preguntó qué tan de acuerdo o en desacuerdo están con que determinado comportamiento es un acto de corrupción. De esta forma se encuentra que: 
+
+Comportamiento1 : Evadir impuestos si sabe que no lo descubrirán:
+
+```{r echo=FALSE, warning=FALSE, results='hide'}
+Tabla1= Base %>% group_by(P27_1) %>% summarise(Total = n()) %>%  mutate(Prop = Total / sum(Total)*100) 
+Tabla1$Prop= paste(round(Tabla1$Prop,digits=0))
+Tabla1$P27_1=as.factor(Tabla1$P27_1)
+Tabla1$P27_1=factor(Tabla1$P27_1,
+levels= levels(Tabla1$P27_1), labels=  c("Totalmente en desacuerdo", "En desacuerdo", "De acuerdo", "Totalmente de acuerdo", "NS/NP"), ordered= F)
+```
+
+```{r echo=FALSE, warning=FALSE, results='hide'}
+library(forcats)
+Tabla1$P27_1= fct_relevel(Tabla1$P27_1, "NS/NP", "Totalmente de acuerdo", "De acuerdo", "En desacuerdo", "Totalmente en desacuerdo")
+```
+
+```{r echo=FALSE, warning=FALSE, results='hide'}
+str(Tabla1)
+Tabla1$Prop=as.numeric(Tabla1$Prop)
+```
+
+
+```{r echo=FALSE}
+ggplot(Tabla1, aes(x = P27_1, y=Prop)) + 
+geom_bar(stat="identity", fill= "tan2") + 
+geom_text(aes(label= paste(round(Prop, digits=0), '%')), size=3, hjust=-0.00) + ylab ("Porcentaje") + coord_flip()  + ggtitle ("¿Cuán de acuerdo está con que, \n evadir impuestos si sabe que no lo descubrirán, \n es un acto de corrupción?") + labs(caption ="Fuente:Proética, actualizado al 2019")
+
+```
+
+
+Comportamiento2: Dar bienes o pagar una “propina” para que le perdonen una multa o para agilizar un trámite o servicio público
+
+```{r echo=FALSE, warning=FALSE, results='hide'}
+Tabla2= Base %>% group_by(P27_2) %>% summarise(Total = n()) %>%  mutate(Prop = Total / sum(Total)*100) 
+Tabla2$Prop= paste(round(Tabla2$Prop,digits=0),"%")
+Tabla2$P27_2=as.factor(Tabla2$P27_2)
+Tabla2$P27_2=factor(Tabla2$P27_2,
+levels= levels(Tabla2$P27_2), labels=  c("Totalmente en desacuerdo", "En desacuerdo", "De acuerdo", "Totalmente de acuerdo", "NS/NP"), ordered= F) 
+
+```
+
+```{r echo=FALSE, warning=FALSE, results='hide'}
+library(forcats)
+Tabla2$P27_2= fct_relevel(Tabla2$P27_2, "NS/NP", "Totalmente de acuerdo", "De acuerdo", "En desacuerdo", "Totalmente en desacuerdo")
+```
+
+```{r echo=FALSE}
+ggplot(Tabla2, aes(x = P27_2, y=Prop)) + 
+geom_bar(stat="identity", fill= "tan") + 
+geom_text(aes(label=Prop), size=3, hjust=-0.08) +  ylab ("Porcentaje") + coord_flip() +
+ggtitle("¿Cuán de acuerdo está con que \n dar bienes o pagar una “propina” para que le perdonen una multa o para agilizar un trámite o servicio público, \n es un acto de corrupción?")+ labs(caption ="Fuente:Proética, actualizado al 2019")
+```
+
+Comportamiento3: Buscar un pariente o amigo, que es funcionario público, para que lo favorezca en un servicio:
+
+```{r echo=FALSE, warning=FALSE, results='hide'}
+Tabla3= Base %>% group_by(P27_6) %>% summarise(Total = n()) %>%  mutate(Prop = Total / sum(Total)*100) 
+Tabla3$Prop= paste(round(Tabla3$Prop,digits=0),"%")
+Tabla3$P27_6=as.factor(Tabla3$P27_6)
+Tabla3$P27_6=factor(Tabla3$P27_6,
+levels= levels(Tabla3$P27_6), labels=  c("Totalmente en desacuerdo", "En desacuerdo", "De acuerdo", "Totalmente de acuerdo", "NS/NP"), ordered= F)
+```
+
+```{r echo=FALSE, warning=FALSE, results='hide'}
+library(forcats)
+Tabla3$P27_6= fct_relevel(Tabla3$P27_6, "NS/NP", "Totalmente de acuerdo", "De acuerdo", "En desacuerdo", "Totalmente en desacuerdo")
+```
+
+
+```{r echo=FALSE}
+ggplot(Tabla3, aes(x = P27_6, y=Prop)) + 
+geom_bar(stat="identity", fill= "tan2") + 
+geom_text(aes(label=Prop), size=3, hjust=-0.05) +
+ggtitle("¿Cuán de acuerdo está con que  \n buscar un pariente o amigo que es funcionario público para que lo favorezca en un servicio, \n es un acto de corrupción?") + ylab ("Porcentaje") +   coord_flip() + labs(caption ="Fuente:Proética, actualizado al 2019") 
+```
+
+Se identifica que el evadir impuestos, dar una coima y el buscar beneficios a partir de una conexión (pariente o amigo en la administración pública), son actos de corrupción para más del 55% de los encuestados, respectivamente. 
+
+No obstante, para el 18% de los encuestados, el evadir el pago de impuesto cuando no los descubren no es un acto de corrupción. En el caso del pago de coimas, se encuentra un 22% de encuestados que no relacionan al comportamiento como uno corrupto. Pasa lo mismo con el comportamiento3, buscar ser favorecido por un pariente o amigo que es funcionario público, puesto que para 21% de los encuestados este no sería un acto corrupto. 
+
+A su vez, al identificar el problema público, será fundamental saber si la corrupción es percibida o no como uno de los principales problemas que enfrenta el Perú, en el 2019. Al respecto, se encuentra que en todas las macrozonas del Perú, la corrupción está considerada entre los 3 principales problemas que enfrenta el Perú.
+
+```{r echo=FALSE, message=FALSE}
+Tabla5= Base%>% 
+  group_by(P1_03, macrozona)%>%
+  summarise(total_pro=n())
+```
+
+```{r echo=FALSE, message=FALSE}
+Tabla5.1= as.data.frame(Base%>% filter(macrozona =="1")%>% group_by(P1_03, macrozona) %>% summarise(total=n())) %>%  mutate(prop = total / sum(total)*100) %>%   mutate(ypos=cumsum(prop)-0.5*prop)
+
+Tabla5.2= as.data.frame(Base%>% filter(macrozona =="2")%>% group_by(P1_03, macrozona) %>% summarise(total=n())) %>%  mutate(prop = total / sum(total)*100) %>%   mutate(ypos=cumsum(prop)-0.5*prop)
+
+Tabla5.3= as.data.frame(Base%>% filter(macrozona =="3")%>% group_by(P1_03, macrozona) %>% summarise(total=n())) %>%  mutate(prop = total / sum(total)*100) %>%   mutate(ypos=cumsum(prop)-0.5*prop)
+
+Tabla5.4= as.data.frame(Base%>% filter(macrozona =="4")%>% group_by(P1_03, macrozona) %>% summarise(total=n())) %>%  mutate(prop = total / sum(total)*100) %>%   mutate(ypos=cumsum(prop)-0.5*prop)
+
+Tabla5.5= as.data.frame(Base%>% filter(macrozona =="5")%>% group_by(P1_03, macrozona) %>% summarise(total=n())) %>%  mutate(prop = total / sum(total)*100) %>%   mutate(ypos=cumsum(prop)-0.5*prop)
+
+Tabla5=rbind(Tabla5.1,Tabla5.2,Tabla5.3,Tabla5.4,Tabla5.5)
+
+```
+
+```{r echo=FALSE, message=FALSE}
+Tabla5$P1_03=as.factor(Tabla5$P1_03)
+Tabla5$macrozona= as.factor(Tabla5$macrozona)
+Tabla5$macrozona=factor(Tabla5$macrozona,
+levels= levels(Tabla5$macrozona), labels=  c("Lima", "Norte", "Centro", "Sur", "Oriente"), ordered= F)
+```
+
+```{r echo=FALSE, message=FALSE}
+Tabla5$P1_03=factor(Tabla5$P1_03, labels=  c("No", "Si"))
+```
+
+```{r echo=FALSE, message=FALSE}
+Tabla5%>%ggplot()+ aes(x=" ", y=prop, group=macrozona, colour=P1_03, fill=P1_03) +
+         geom_bar(width = 1, stat = "identity") +
+         coord_polar("y", start=0) + 
+         facet_grid(.~ macrozona) +theme_void()+
+          geom_text(aes(y = ypos, label = paste(round(prop, digits=0), '%')), colour="white",size=4)+
+    labs( title="Perpepción de la corrupción como un problema, por macrozona:",caption ="Fuente:Proética, actualizado al 2019")+
+  facet_wrap(~macrozona,ncol=3,dir="v")+
+  theme(plot.title=element_text(hjust=0.3)) +  scale_fill_manual(values = alpha(c("coral2", "olivedrab4"), 1))
+```
+
+
+También será fundamental ahondar en la percepción del problema según grupo de edad. Al respecto, como se observa en el siguiente gráfico, en los 3 grupos de edad, la percepción de gravedad del problema es alta, superando el 59% de encuestados que lo consideran uno de los Top3 más importantes en el 2019. 
+
+```{r echo=FALSE, message=FALSE}
+Tabla7.1= as.data.frame(Base%>% filter(Dg1x =="2")%>% group_by(P1_03, Dg1x ) %>% summarise(total=n())) %>%  mutate(prop = total / sum(total)*100)
+
+Tabla7.2= as.data.frame(Base%>% filter(Dg1x =="3")%>% group_by(P1_03, Dg1x ) %>% summarise(total=n())) %>%  mutate(prop = total / sum(total)*100)
+
+Tabla7.3= as.data.frame(Base%>% filter(Dg1x =="4")%>% group_by(P1_03, Dg1x ) %>% summarise(total=n())) %>%  mutate(prop = total / sum(total)*100)
+
+Tabla7=rbind(Tabla7.1,Tabla7.2,Tabla7.3)
+```
+
+
+```{r echo=FALSE, message=FALSE}
+Tabla7$P1_03=as.factor(Tabla7$P1_03)
+Tabla7$P1_03=factor(Tabla7$P1_03, labels=  c("No", "Si"))
+Tabla7$Dg1x=as.factor(Tabla7$Dg1x)
+Tabla7$Dg1x =factor(Tabla7$Dg1x, labels=  c("De 18 a 24 años", "De 25 a 39 años", "De 40 a más años"))
+```
+
+
+```{r echo=FALSE, message=FALSE}
+ggplot(Tabla7, aes(x = Dg1x, y=prop, fill=P1_03)) + 
+geom_bar(stat="identity") + 
+geom_text(aes(label = paste(round(prop, digits=0), '%')), vjust = 0.3,size = 3, 
+position = position_stack(vjust = 0.5)) +
+ggtitle("¿La corrupción es uno de los 3 principales problemas del país en la actualidad?") + labs(x= "Grupos de edad", y= "Porcentajes", caption ="Fuente:Proética, actualizado al 2019")+ scale_fill_manual(values = c("coral2", "olivedrab4")) 
+```
+
+
+
+## Experiencia con la corrupción:
+
+En esta sección se realiza una aproximación a la experiencia de los encuestados con los 3 comportamientos analizados. 
+
+#### En una escala del 1 al 4, donde 1 es Nada frecuente y 4 es Muy frecuente, ¿con qué frecuencia diría usted que ocurren estas prácticas en el país? - Evadir impuestos si sabe que no lo descubrirán:  
+
+```{r echo=FALSE, warning=FALSE}
+Experiencia1= as.data.frame(Base%>% group_by(P28_1) %>% summarise(Frecuencia=n())) %>%  mutate(Porcentaje = Frecuencia / sum(Frecuencia)*100) %>% mutate(Porcentaje = paste(round(Porcentaje, digits=0), '%'))
+
+Experiencia1$P28_1= as.factor(Experiencia1$P28_1)
+Experiencia1$P28_1=factor(Experiencia1$P28_1,
+levels= levels(Experiencia1$P28_1), labels=  c("Nada frecuente", "Poco frecuente", "Frecuente", "Muy frecuente", "NS/ NP"), ordered= F)
+colnames(Experiencia1)[1]= "Evadir impuestos"
+Experiencia1
+```
+
+Así, se encuentra que cerca del 88% de los encuestados percibe como muy frecuente y frecuente los casos de evasión de impuestos en el Perú.
+
+#### En una escala del 1 al 4, donde 1 es Nada frecuente y 4 es Muy frecuente, ¿con qué frecuencia diría usted que ocurren estas prácticas en el país? - Dar bienes o pagar una “propina” para que le perdonen una multa o para agilizar un trámite 
+
+```{r echo=FALSE, warning=FALSE}
+Experiencia2= as.data.frame(Base%>% group_by(P28_3) %>% summarise(Frecuencia=n())) %>%  mutate(Porcentaje = Frecuencia / sum(Frecuencia)*100) %>% mutate(Porcentaje = paste(round(Porcentaje, digits=0), '%'))
+
+Experiencia2$P28_3= as.factor(Experiencia2$P28_3)
+Experiencia2$P28_3=factor(Experiencia2$P28_3,
+levels= levels(Experiencia2$P28_3), labels=  c("Nada frecuente", "Poco frecuente", "Frecuente", "Muy frecuente", "NS/ NP"), ordered= F)
+
+colnames(Experiencia2)[1]= "Pagar coimas"
+Experiencia2
+```
+
+Por su parte, el pago de coimas también es considerado muy frecuente y frecuente para más del 80% de los encuestados. Para una minoría, solo el 3%, este comportamiento es nada frecuente. 
+
+#### En una escala del 1 al 4, donde 1 es Nada frecuente y 4 es Muy frecuente, ¿con qué frecuencia diría usted que ocurren estas prácticas en el país? - Buscar un pariente o amigo que es funcionario público para que lo favorezca en un servicio 
+
+```{r echo=FALSE, warning=FALSE}
+Experiencia3= as.data.frame(Base%>% group_by(P28_6) %>% summarise(Frecuencia=n())) %>%  mutate(Porcentaje = Frecuencia / sum(Frecuencia)*100) %>% mutate(Porcentaje = paste(round(Porcentaje, digits=0), '%'))
+
+Experiencia3$P28_6= as.factor(Experiencia3$P28_6)
+Experiencia3$P28_6=factor(Experiencia3$P28_6,
+levels= levels(Experiencia3$P28_6), labels=  c("Nada frecuente", "Poco frecuente", "Frecuente", "Muy frecuente", "NS/ NP"), ordered= F)
+
+colnames(Experiencia3)[1]= "Buscar ser favorecido"
+Experiencia3
+```
+
+Para terminar con el reconocimiento de las experiencias de los encuestados, se encuentra que para un 88% de los encuestados, el ser favorecido por un familiar o amigo funcionario público en el Perú es frecuente y muy frecuente. 
+
+## Actitudes: ¿Somos o no tolerantes a la corrupción?
+
+En esta segunda sección, se analizará la tolerancia de los encuestados con los 3 comportamientos corruptos estudiados.
+
+Para ello, se crea un indicador de tolerancia para diferenciar entre tolerancia alta, media y rechazo definitivo al comportamiento (se emplea la metodología planteada por Proética 2019) 
+
+Este análisis se realizará diferenciando entre macrozonas y grupos de edad: 
+
+#### ¿Qué tan de acuerdo o en desacuerdo está con…? - Evadir impuestos si sabe que no lo descubrirán:
+
+Tolerancia al comportamiento por macrozona: 
+
+```{r echo=FALSE, message=FALSE}
+Tabla8.0= as.data.frame(Base%>% select(P41_1,macrozona))
+```
+
+```{r echo=FALSE, message=FALSE}
+Tabla8.0= Tabla8.0%>% 
+  mutate(Tolerancia = case_when(P41_1==1 ~ "Rechazo definitivo", P41_1>=2 & P41_1<=3  ~ "Tolerancia media", P41_1>=4 & P41_1<=5  ~ "Alta tolerancia", P41_1==6 ~ "NS/NP"))
+
+```
+
+```{r echo=FALSE, message=FALSE}
+library(forcats)
+Tabla8.0$Tolerancia= fct_relevel(Tabla8.0$Tolerancia, "Rechazo definitivo","Tolerancia media", "Alta tolerancia", "NS/NP")
+```
+
+```{r echo=FALSE, message=FALSE}
+Tabla8.1= as.data.frame(Tabla8.0%>% filter(macrozona =="1")%>% group_by(Tolerancia, macrozona) %>% summarise(Frecuencia=n())) %>%  mutate(Porcentaje = Frecuencia / sum(Frecuencia)*100)    
+
+Tabla8.2= as.data.frame(Tabla8.0%>% filter(macrozona =="2")%>% group_by(Tolerancia, macrozona) %>% summarise(Frecuencia=n())) %>%  mutate(Porcentaje = Frecuencia / sum(Frecuencia)*100) 
+
+Tabla8.3= as.data.frame(Tabla8.0%>% filter(macrozona =="3")%>% group_by(Tolerancia, macrozona) %>% summarise(Frecuencia=n())) %>%  mutate(Porcentaje = Frecuencia / sum(Frecuencia)*100)
+
+Tabla8.4= as.data.frame(Tabla8.0%>% filter(macrozona =="4")%>% group_by(Tolerancia, macrozona) %>% summarise(Frecuencia=n())) %>%  mutate(Porcentaje = Frecuencia / sum(Frecuencia)*100) 
+
+Tabla8.5= as.data.frame(Tabla8.0%>% filter(macrozona =="5")%>% group_by(Tolerancia, macrozona) %>% summarise(Frecuencia=n())) %>%  mutate(Porcentaje = Frecuencia / sum(Frecuencia)*100) 
+
+Tabla8=rbind(Tabla8.1,Tabla8.2,Tabla8.3,Tabla8.4,Tabla8.5)
+```
+
+```{r echo=FALSE, message=FALSE}
+Tabla8$macrozona= as.factor(Tabla8$macrozona)
+
+Tabla8$macrozona=factor(Tabla8$macrozona,
+levels= levels(Tabla8$macrozona), labels=  c("Lima", "Norte", "Centro", "Sur", "Oriente"), ordered= F)
+```
+
+```{r echo=FALSE, message=FALSE}
+ggplot(Tabla8, aes(x = macrozona, y=Porcentaje, fill=Tolerancia)) + 
+geom_bar(stat="identity") + 
+geom_text(aes(label = paste(round(Porcentaje, digits=0), '%')), hjust = 0.0,size = 3, position = position_stack(vjust = 0.5)) +
+ggtitle("Evadir impuestos si sabe que no lo descubrirán") + labs(x= "Macrozonas", y= "Porcentajes%", caption ="Fuente:Proética, actualizado al 2019") +scale_fill_manual(values = c("olivedrab3", "gold2", "firebrick1", "tan4")) 
+```
+
+
+Tolerancia al comportamiento por grupo de edad: 
+
+```{r echo=FALSE, message=FALSE}
+Tabla9.0= as.data.frame(Base%>% select(P41_1,Dg1x))
+```
+
+```{r echo=FALSE, message=FALSE}
+Tabla9.0= Tabla9.0%>% 
+  mutate(Tolerancia = case_when(P41_1==1 ~ "Rechazo definitivo", P41_1>=2 & P41_1<=3  ~ "Tolerancia media", P41_1>=4 & P41_1<=5  ~ "Alta tolerancia", P41_1==6 ~ "NS/NP"))
+```
+
+```{r echo=FALSE, message=FALSE}
+library(forcats)
+Tabla9.0$Tolerancia= fct_relevel(Tabla9.0$Tolerancia, "Rechazo definitivo","Tolerancia media", "Alta tolerancia", "NS/NP")
+```
+
+```{r echo=FALSE, message=FALSE}
+Tabla9.1= as.data.frame(Tabla9.0%>% filter(Dg1x =="2")%>% group_by(Tolerancia, Dg1x) %>% summarise(Frecuencia=n())) %>%  mutate(Porcentaje = Frecuencia / sum(Frecuencia)*100)    
+
+Tabla9.2= as.data.frame(Tabla9.0%>% filter(Dg1x =="3")%>% group_by(Tolerancia, Dg1x) %>% summarise(Frecuencia=n())) %>%  mutate(Porcentaje = Frecuencia / sum(Frecuencia)*100) 
+
+Tabla9.3= as.data.frame(Tabla9.0%>% filter(Dg1x =="4")%>% group_by(Tolerancia, Dg1x) %>% summarise(Frecuencia=n())) %>%  mutate(Porcentaje = Frecuencia / sum(Frecuencia)*100)
+
+Tabla9=rbind(Tabla9.1,Tabla9.2,Tabla9.3)
+```
+
+```{r echo=FALSE, message=FALSE}
+Tabla9$Dg1x=as.factor(Tabla9$Dg1x)
+Tabla9$Dg1x =factor(Tabla9$Dg1x, labels=  c("De 18 a 24 años", "De 25 a 39 años", "De 40 a más años"))
+```
+
+```{r echo=FALSE, message=FALSE}
+ggplot(Tabla9, aes(x = Dg1x, y=Porcentaje, fill=Tolerancia)) + 
+geom_bar(stat="identity") + 
+geom_text(aes(label = paste(round(Porcentaje, digits=0), '%')), vjust = 0.3,size = 3, 
+position = position_stack(vjust = 0.5)) +
+ggtitle("Evadir impuestos si sabe que no lo descubrirán") + labs(x= "Grupos de edad", y= "Porcentajes%", caption ="Fuente:Proética, actualizado al 2019") +scale_fill_manual(values = c("olivedrab3", "gold2", "firebrick1", "tan4"))
+```
+
+
+Hallazgo1: 
+
+Sobre el comportamiento de evadir impuestos si se sabe que no lo descubrirán, se encuentra que no existe una diferencia entre las macrozonas ni grupos de edad. Es una constante que en cada categoría de ambas variables exista una tolerancia media con el comportamiento. 
+
+El rechazo definitivo, no obstante, solo corresponde, en el mejor caso, a un 24% en el sur del Perú. Mientras que el grupo de edad de 40 años es el que presenta mayor rechazo definitivo contra el comportamiento, con un 22%. 
+
+#### ¿Qué tan de acuerdo o en desacuerdo está con…? Dar bienes o pagar una “propina” para que le perdonen una multa o para agilizar un trámite o servicio público:
+
+Tolerancia al comportamiento por macrozona: 
+```{r echo=FALSE, message=FALSE}
+Tabla10.0= as.data.frame(Base%>% select(P41_3,macrozona))
+```
+
+```{r echo=FALSE, message=FALSE}
+Tabla10.0= Tabla10.0%>% 
+  mutate(Tolerancia = case_when(P41_3==1 ~ "Rechazo definitivo", P41_3>=2 & P41_3<=3  ~ "Tolerancia media", P41_3>=4 & P41_3<=5  ~ "Alta tolerancia", P41_3==6 ~ "NS/NP"))
+
+```
+
+```{r echo=FALSE, message=FALSE}
+library(forcats)
+Tabla10.0$Tolerancia= fct_relevel(Tabla10.0$Tolerancia, "Rechazo definitivo","Tolerancia media", "Alta tolerancia", "NS/NP")
+```
+
+```{r echo=FALSE, message=FALSE}
+Tabla10.1= as.data.frame(Tabla10.0%>% filter(macrozona =="1")%>% group_by(Tolerancia, macrozona) %>% summarise(Frecuencia=n())) %>%  mutate(Porcentaje = Frecuencia / sum(Frecuencia)*100)    
+
+Tabla10.2= as.data.frame(Tabla10.0%>% filter(macrozona =="2")%>% group_by(Tolerancia, macrozona) %>% summarise(Frecuencia=n())) %>%  mutate(Porcentaje = Frecuencia / sum(Frecuencia)*100) 
+
+Tabla10.3= as.data.frame(Tabla10.0%>% filter(macrozona =="3")%>% group_by(Tolerancia, macrozona) %>% summarise(Frecuencia=n())) %>%  mutate(Porcentaje = Frecuencia / sum(Frecuencia)*100)
+
+Tabla10.4= as.data.frame(Tabla10.0%>% filter(macrozona =="4")%>% group_by(Tolerancia, macrozona) %>% summarise(Frecuencia=n())) %>%  mutate(Porcentaje = Frecuencia / sum(Frecuencia)*100) 
+
+Tabla10.5= as.data.frame(Tabla10.0%>% filter(macrozona =="5")%>% group_by(Tolerancia, macrozona) %>% summarise(Frecuencia=n())) %>%  mutate(Porcentaje = Frecuencia / sum(Frecuencia)*100) 
+
+Tabla10=rbind(Tabla10.1,Tabla10.2,Tabla10.3,Tabla10.4,Tabla10.5)
+```
+
+
+```{r echo=FALSE, message=FALSE}
+Tabla10$macrozona= as.factor(Tabla10$macrozona)
+
+Tabla10$macrozona=factor(Tabla10$macrozona,
+levels= levels(Tabla10$macrozona), labels=  c("Lima", "Norte", "Centro", "Sur", "Oriente"), ordered= F)
+```
+
+```{r echo=FALSE, message=FALSE}
+ggplot(Tabla10, aes(x = macrozona, y=Porcentaje, fill=Tolerancia)) + 
+geom_bar(stat="identity") + 
+geom_text(aes(label = paste(round(Porcentaje, digits=0), '%')), hjust = 0.0,size = 3, position = position_stack(vjust = 0.5)) +
+ggtitle("Dar bienes o pagar una “propina” para que perdonen una multa o agilizar un trámite o servicio público") + labs(x= "Macrozonas", y= "Porcentajes %", caption ="Fuente:Proética, actualizado al 2019") +scale_fill_manual(values = c("olivedrab3", "gold2", "firebrick1", "tan4")) 
+```
+
+Tolerancia al comportamiento por grupo de edad: 
+```{r echo=FALSE, message=FALSE}
+Tabla12.0= as.data.frame(Base%>% select(P41_3,Dg1x))
+```
+
+```{r echo=FALSE, message=FALSE}
+Tabla12.0= Tabla12.0%>% 
+  mutate(Tolerancia = case_when(P41_3==1 ~ "Rechazo definitivo", P41_3>=2 & P41_3<=3  ~ "Tolerancia media", P41_3>=4 & P41_3<=5  ~ "Alta tolerancia", P41_3==6 ~ "NS/NP"))
+```
+
+```{r echo=FALSE, message=FALSE}
+library(forcats)
+Tabla12.0$Tolerancia= fct_relevel(Tabla12.0$Tolerancia, "Rechazo definitivo","Tolerancia media", "Alta tolerancia", "NS/NP")
+```
+
+```{r echo=FALSE, message=FALSE}
+Tabla12.1= as.data.frame(Tabla12.0%>% filter(Dg1x =="2")%>% group_by(Tolerancia, Dg1x) %>% summarise(Frecuencia=n())) %>%  mutate(Porcentaje = Frecuencia / sum(Frecuencia)*100)    
+
+Tabla12.2= as.data.frame(Tabla12.0%>% filter(Dg1x =="3")%>% group_by(Tolerancia, Dg1x) %>% summarise(Frecuencia=n())) %>%  mutate(Porcentaje = Frecuencia / sum(Frecuencia)*100) 
+
+Tabla12.3= as.data.frame(Tabla12.0%>% filter(Dg1x =="4")%>% group_by(Tolerancia, Dg1x) %>% summarise(Frecuencia=n())) %>%  mutate(Porcentaje = Frecuencia / sum(Frecuencia)*100)
+
+Tabla12=rbind(Tabla12.1,Tabla12.2,Tabla12.3)
+```
+
+```{r echo=FALSE, message=FALSE}
+Tabla12$Dg1x=as.factor(Tabla12$Dg1x)
+Tabla12$Dg1x =factor(Tabla12$Dg1x, labels=  c("De 18 a 24 años", "De 25 a 39 años", "De 40 a más años"))
+```
+
+```{r echo=FALSE, message=FALSE}
+ggplot(Tabla12, aes(x = Dg1x, y=Porcentaje, fill=Tolerancia)) + 
+geom_bar(stat="identity") + 
+geom_text(aes(label = paste(round(Porcentaje, digits=0), '%')), vjust = 0.3,size = 3, 
+position = position_stack(vjust = 0.5)) +
+ggtitle("Dar bienes o pagar una “propina” para que perdonen una multa o agilizar un trámite o servicio público") + labs(x= "Grupo de edad", y= "Porcentajes %", caption ="Fuente:Proética, actualizado al 2019") +scale_fill_manual(values = c("olivedrab3", "gold2", "firebrick1", "tan4")) 
+```
+
+Hallazgo2: 
+
+Los resultados son símiles para el 2da comportamiento, el pago de "propinas o bienes" por no pagar una multa o agilizar trámites y servicios. No existe una diferencia significativa entre macrozonas ni grupos de edad. No obstante, si es posible diferenciar que en la macrozona del Sur el rechazo definitivo al comportamiento es mayor, un 30%, que en las otras macrozonas. 
+
+A nivel de grupos de edad las diferencias son mínimas. 
+
+#### ¿Qué tan de acuerdo o en desacuerdo está con…? Buscar un pariente o amigo, que es funcionario público, para que lo favorezca en un servicio:
+
+Tolerancia a este comportamiento por macrozona:
+
+```{r echo=FALSE, message=FALSE}
+Tabla13.0= as.data.frame(Base%>% select(P41_6,macrozona))
+```
+
+```{r echo=FALSE, message=FALSE}
+Tabla13.0= Tabla13.0%>% 
+  mutate(Tolerancia = case_when(P41_6==1 ~ "Rechazo definitivo", P41_6>=2 & P41_6<=3  ~ "Tolerancia media", P41_6>=4 & P41_6<=5  ~ "Alta tolerancia", P41_6==6 ~ "NS/NP"))
+```
+
+```{r echo=FALSE, message=FALSE}
+library(forcats)
+Tabla13.0$Tolerancia= fct_relevel(Tabla13.0$Tolerancia, "Rechazo definitivo","Tolerancia media", "Alta tolerancia", "NS/NP")
+```
+
+```{r echo=FALSE, message=FALSE}
+Tabla13.1= as.data.frame(Tabla13.0%>% filter(macrozona =="1")%>% group_by(Tolerancia, macrozona) %>% summarise(Frecuencia=n())) %>%  mutate(Porcentaje = Frecuencia / sum(Frecuencia)*100)    
+
+Tabla13.2= as.data.frame(Tabla13.0%>% filter(macrozona =="2")%>% group_by(Tolerancia, macrozona) %>% summarise(Frecuencia=n())) %>%  mutate(Porcentaje = Frecuencia / sum(Frecuencia)*100) 
+
+Tabla13.3= as.data.frame(Tabla13.0%>% filter(macrozona =="3")%>% group_by(Tolerancia, macrozona) %>% summarise(Frecuencia=n())) %>%  mutate(Porcentaje = Frecuencia / sum(Frecuencia)*100)
+
+Tabla13.4= as.data.frame(Tabla13.0%>% filter(macrozona =="4")%>% group_by(Tolerancia, macrozona) %>% summarise(Frecuencia=n())) %>%  mutate(Porcentaje = Frecuencia / sum(Frecuencia)*100) 
+
+Tabla13.5= as.data.frame(Tabla13.0%>% filter(macrozona =="5")%>% group_by(Tolerancia, macrozona) %>% summarise(Frecuencia=n())) %>%  mutate(Porcentaje = Frecuencia / sum(Frecuencia)*100) 
+
+Tabla13=rbind(Tabla13.1,Tabla13.2,Tabla13.3,Tabla13.4,Tabla13.5)
+```
+
+
+```{r echo=FALSE, message=FALSE}
+Tabla13$macrozona= as.factor(Tabla13$macrozona)
+Tabla13$macrozona=factor(Tabla13$macrozona,
+levels= levels(Tabla13$macrozona), labels=  c("Lima", "Norte", "Centro", "Sur", "Oriente"), ordered= F)
+```
+
+```{r echo=FALSE, message=FALSE}
+ggplot(Tabla13, aes(x = macrozona, y=Porcentaje, fill=Tolerancia)) + 
+geom_bar(stat="identity") + 
+geom_text(aes(label = paste(round(Porcentaje, digits=0), '%')), hjust = 0.0,size = 3, position = position_stack(vjust = 0.5)) +
+ggtitle("Buscar un pariente o amigo, que es funcionario público, para que lo favorezca en un servicio") + labs(x= "Macrozonas", y= "Porcentajes %", caption ="Fuente:Proética, actualizado al 2019") +scale_fill_manual(values = c("olivedrab3", "gold2", "firebrick1", "tan4")) 
+```
+
+Tolerancia a este comportamiento por grupo de edad: 
+
+```{r echo=FALSE, message=FALSE}
+Tabla14.0= as.data.frame(Base%>% select(P41_6,Dg1x))
+```
+
+```{r echo=FALSE, message=FALSE}
+Tabla14.0= Tabla14.0%>% 
+  mutate(Tolerancia = case_when(P41_6==1 ~ "Rechazo definitivo", P41_6>=2 & P41_6<=3  ~ "Tolerancia media", P41_6>=4 & P41_6<=5  ~ "Alta tolerancia", P41_6==6 ~ "NS/NP"))
+```
+
+```{r echo=FALSE, message=FALSE}
+library(forcats)
+Tabla14.0$Tolerancia= fct_relevel(Tabla14.0$Tolerancia, "Rechazo definitivo","Tolerancia media", "Alta tolerancia", "NS/NP")
+```
+
+```{r echo=FALSE, message=FALSE}
+Tabla14.1= as.data.frame(Tabla14.0%>% filter(Dg1x =="2")%>% group_by(Tolerancia, Dg1x) %>% summarise(Frecuencia=n())) %>%  mutate(Porcentaje = Frecuencia / sum(Frecuencia)*100)    
+
+Tabla14.2= as.data.frame(Tabla14.0%>% filter(Dg1x =="3")%>% group_by(Tolerancia, Dg1x) %>% summarise(Frecuencia=n())) %>%  mutate(Porcentaje = Frecuencia / sum(Frecuencia)*100) 
+
+Tabla14.3= as.data.frame(Tabla14.0%>% filter(Dg1x =="4")%>% group_by(Tolerancia, Dg1x) %>% summarise(Frecuencia=n())) %>%  mutate(Porcentaje = Frecuencia / sum(Frecuencia)*100)
+
+Tabla14=rbind(Tabla14.1,Tabla14.2,Tabla14.3)
+```
+
+```{r echo=FALSE, message=FALSE}
+Tabla14$Dg1x=as.factor(Tabla14$Dg1x)
+Tabla14$Dg1x =factor(Tabla14$Dg1x, labels=  c("De 18 a 24 años", "De 25 a 39 años", "De 40 a más años"))
+```
+
+```{r echo=FALSE, message=FALSE}
+ggplot(Tabla14, aes(x = Dg1x, y=Porcentaje, fill=Tolerancia)) + 
+geom_bar(stat="identity") + 
+geom_text(aes(label = paste(round(Porcentaje, digits=0), '%')), vjust = 0.3,size = 3, 
+position = position_stack(vjust = 0.5)) +
+ggtitle("Buscar un pariente o amigo, que es funcionario público, para que lo favorezca en un servicio") + labs(x= "Grupo de edad", y= "Porcentajes %", caption ="Fuente:Proética, actualizado al 2019") +scale_fill_manual(values = c("olivedrab3", "gold2", "firebrick1", "tan4")) 
+```
+
+Hallazgo3:
+
+Con el 3er comportamiento se confirma un patrón: no existen diferencias en el grado de tolerancia que se percibe sobre el acto de corrupción por macrozona del Perú ni grupo de edad de los encuestados. 
+
+Es preciso resaltar que, una vez más, la macrozona del sur presenta más rechazo definitivo al comportamiento. En este caso, el rechazo es similar al identificado en Lima.
+
+## Hallazgos
+Este informe permite identificar: 
+
+1.  Aún persiste la falta de claridad, para cerca del 20% de los encuestados, sobre qué es un comportamiento corrupto. Para este porcentaje, el evadir impuestos, dar coimas o buscar ser favorecido por un familiar o pariente que es funcionario público NO ES UN COMPORTAMIENTO CORRUPTO. 
+
+2. A pesar de la falta de comprensión del fenómeno, para más del 54% este es uno de los principales problemas que se enfrenta en cada macrozona del Perú. Pasa lo mismo a nivel de grupos de edad. 
+
+3. La frecuencia con la que se observa y se convive con estos comportamientos corruptos es alarmante; más del 80% de los encuestados lo considera algo frecuente o muy frecuente. 
+
+4. No obstante, a pesar de ser tan cotidiano el convivir con estos actos y considerarse como uno de los principales problemas que se viven en el Perú, el grado de tolerancia con ellos es media.
+En promedio, solo un 20% de los encuestados rechaza definitivamente los comportamientos estudiados. Esto permite aprobar la hipótesis general de este estudio puesto que se identifican actitudes de TOLERANCIA MEDIA con los actos corruptos.
+
+5. Por último, las dos hipótesis específicas se niegan. No se encuentra evidencia para asegurar que existen diferencias en el grado de tolerancia a los 3 comportamientos estudiados diferenciando por macrozona y grupos de edad de los encuestados. Por el contrario, vemos que el grado de tolerancia media es una constante en ambas variables. 
+
+6. Por último, este análisis permite identificar la necesidad de seguir explorando las percepciones y experiencias de los peruanos con la corrupción. Esto, con el objetivo de conocer el impacto que tuvo la pandemia y la reducción de controles para agilizar procesos y servicios públicos, en la experiencia de los encuestados con la corrupción. Esta experiencia, a su vez, puede impactar en el grado de tolerancia que se tiene al fenómeno. 
+Estas son algunas propuestas que se pueden trabajar en futuros análisis. 
+
+## Bibliografía: 
+
+Montoya, Y. V. (2015). Manual sobre delitos contra la administración pública. 
+Lima: Instituto de Democracia y Derechos Humanos de la Pontificia 
+Universidad Política del Perú.
+
+OCDE (2018). Estudios de la OCDE sobre Gobernanza Pública La integridad pública desde una perspectiva conductual: El factor humano como herramienta anticorrupción.  Estudios de la OCDE sobre Gobernanza Pública. OECD Publishing, Paris. https://doi.org/10.1787/9789264306745-es.
+
+Proética (2019).XI Encuesta Nacional sobre percepción de la corrupción en el Perú 2019.Recuperado de: https://www.proetica.org.pe/contenido/xi-encuesta-nacional-sobre-percepciones-de-la-corrupcion-en-el-peru-2019/
